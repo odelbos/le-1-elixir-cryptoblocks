@@ -3,6 +3,8 @@ defmodule CryptoBlocks do
   Documentation for `CryptoBlocks`.
   """
 
+  alias CryptoBlocks.Crypto
+
   @enforce_keys [:storage]
 
   defstruct storage: nil,    # Where to store blocks (absolute path)
@@ -60,12 +62,13 @@ defmodule CryptoBlocks do
   # -----
 
   def write_block(%CryptoBlocks{} = struct, data) do
+    {key, iv, tag, encrypted} = Crypto.encrypt data             # TODO : error handling
     id = generate_id struct.storage
     dest = Path.join [struct.storage, id_to_name(id)]
     {:ok, file} = File.open dest, [:write, :binary, :raw]       # TODO : error handling
-    IO.binwrite file, data
+    IO.binwrite file, encrypted
     File.close file
-    %{struct | blocks: [%{id: id, md5: :erlang.md5(data)} | struct.blocks]}
+    %{struct | blocks: [%{id: id, key: key, iv: iv, tag: tag} | struct.blocks]}
   end
 
   # -----
@@ -106,8 +109,8 @@ defmodule CryptoBlocks do
     filename = id_to_name block.id
     filepath = Path.join [storage_path, filename]
     {:ok, file} = File.open filepath, [:read, :binary]          # TODO : error handling
-    data = IO.binread file, :all
+    encrypted = IO.binread file, :all
     File.close file
-    data
+    Crypto.decrypt encrypted, block.key, block.iv, block.tag    # TODO : error handling
   end
 end
