@@ -13,7 +13,7 @@ The subject of this exercice is to play with binary and pattern matching.
 The input binary can be passed in one time to `CryptoBlocks` or in many times with chunks of different size.  
 _(ex: receiving a big file from socket and reading a stream with a buffer)._
 
-The encryption is made with the `AES 256 GCM` algorithm.
+The encryption is made with the `AES 256 GCM` algorithm. Each block is encrypted with his own `key`and `iv`.
 
 As we are working with an accumulator to fit the size of each block to the required size it is necessary to call the `final()` function at the end of the processus.
 
