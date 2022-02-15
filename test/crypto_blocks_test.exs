@@ -121,6 +121,31 @@ defmodule CryptoBlocksTest do
     assert :erlang.md5(data) == :erlang.md5(rebuild_data)
   end
 
+  test "when input binary size is smaller than the block size" do
+    # Load the input binary file
+    lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
+    data = read_bin lorem_512_filepath
+
+    # Split the input binary in blocks of 1024 bytes
+    size = 1024
+    {:ok, blocks} = %CryptoBlocks{storage: @blocks_path, size: size}
+    |> CryptoBlocks.write(data)
+    |> CryptoBlocks.final()
+
+    # Must end up with 1 blocks of 512 bytes
+    assert length(blocks) == 1
+
+    # Test the block
+    [block | _r] = blocks
+    test_block_existence_and_block_size block, 512
+
+    # Rebuild the binary from blocks and assert it's the same as the original binary
+    dest = Path.join [@storage_path, "rebuild_lorem.txt"]
+    CryptoBlocks.rebuild blocks, @blocks_path, dest
+    rebuild_data = read_bin dest
+    assert :erlang.md5(data) == :erlang.md5(rebuild_data)
+  end
+
   # -----------------------------------------------------
   # Helper functions
   # -----------------------------------------------------
