@@ -8,9 +8,12 @@ This repository is an Elixir learning exercice.
 
 The subject of this exercice is to play with binary and pattern matching.
 
-`CryptoBlocks` is used to split a binary in many blocks of specific size.
+`CryptoBlocks` is used to split a binary in many encrypted blocks of specific size.
 
-The input binary can be passed in one time to `CryptoBlocks` or in many times with chunks of different size. (ex: receiving a big file from socket and reading the stream with a buffer)
+The input binary can be passed in one time to `CryptoBlocks` or in many times with chunks of different size.  
+_(ex: receiving a big file from socket and reading a stream with a buffer)._
+
+The encryption is made with the `AES 256 GCM` algorithm.
 
 As we are working with an accumulator to fit the size of each block to the required size it is necessary to call the `final()` function at the end of the processus.
 
@@ -28,7 +31,7 @@ Create a `CryptoBlocks` structure with initial values :
 data = IO.binread file, :all
 File.close file
 
-blocks = %CryptoBlocks{storage: "/..path...", size: 256}
+{:ok, blocks} = %CryptoBlocks{storage: "/..path...", size: 256}
   |> CryptoBlocks.write(data)
   |> CryptoBlocks.final()
 
@@ -37,7 +40,7 @@ IO.inspect blocks
 
 ### Example : Reading many chunks
 
-_(Each chunks can be of different size)_
+_(each chunks can be of different size)_
 
 ```elixir
 s = %CryptoBlocks{storage: "/..path...", size: 256}
@@ -56,7 +59,7 @@ s3 = CryptoBlocks.write(s2, chunk3)
 
 # Call the `final()` function and get the blocks description
 
-blocks = CryptoBlocks.final(s3)
+{:ok, blocks} = CryptoBlocks.final(s3)
 
 IO.inspect blocks
 ```
@@ -64,7 +67,7 @@ IO.inspect blocks
 or
 
 ```elixir
-blocks = %CryptoBlocks{storage: "/..path...", size: 256}
+{:ok, blocks} = %CryptoBlocks{storage: "/..path...", size: 256}
   |> CryptoBlocks.write(chunk1)
   |> CryptoBlocks.write(chunk2)
   |> CryptoBlocks.write(chunk3)
@@ -78,15 +81,19 @@ After calling the `final()` function you will receive a list containing the desc
 
 ```
 [
-	%{                  # block 1
-	  id: << ...>>,     # id is used as file name for the block
-	  md5: << ...>>     # block md5
-	},
-	%{                  # block 2
-	  id: << ...>>,
-	  md5: << ...>>
-	},
-	...
+  %{                  # block 1
+    id: << ...>>,     # id is used as file name for the block
+    key: << ...>>,    # aes key (256 GCM)
+    iv: << ...>>,     # aes iv
+    tag: << ...>>     # aes tag
+  },
+  %{                  # block 2
+    id: << ...>>,
+    key: << ...>>,
+    iv: << ...>>,
+    tag: << ...>>
+  },
+  ...
 ]
 ```
 
@@ -101,14 +108,14 @@ _(the last block will have the same size than the other blocks only when the inp
 
 ```Elixir
 dest = "/absolute/path/myfile.txt"
-CryptoBlocks.rebuild(blocks, storage, dest)
+CryptoBlocks.rebuild blocks, storage, dest
 ```
 
 # Status
 
 - [x] Basic file splitter
 - [x] Basic tests
-- [ ] Add block encryption
+- [x] Add block encryption
 - [ ] Error handling
 - [ ] Add specs
 - [ ] Add examples usage
