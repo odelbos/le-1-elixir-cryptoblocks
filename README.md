@@ -82,23 +82,43 @@ After calling the `final()` function you will receive a list containing the desc
 ```
 [
   %{                  # block 1
-    id: << ...>>,     # id is used as file name for the block
-    key: << ...>>,    # aes key (256 GCM)
-    iv: << ...>>,     # aes iv
-    tag: << ...>>     # aes tag
+    id: << ... >>,     # id is used as file name for the block
+    key: << ... >>,    # aes key (256 GCM)
+    iv: << ... >>,     # aes iv
+    tag: << ... >>     # aes tag
   },
   %{                  # block 2
-    id: << ...>>,
-    key: << ...>>,
-    iv: << ...>>,
-    tag: << ...>>
+    id: << ... >>,
+    key: << ... >>,
+    iv: << ... >>,
+    tag: << ... >>
   },
   ...
 ]
 ```
 
+`id`, `key`, `iv`, `tag` are of type binary.
+
 Usually the last block is the remaining accumulator and it is smaller than the other blocks.  
 _(the last block will have the same size than the other blocks only when the input binary size is a multiple of the chosen output block size)._
+
+### Pack and unpack the blocks description
+
+Some helper functions in the `Utils` module are used to pack/unpack the blocks description in a single binary.
+
+Pack in a single binary :
+
+```elixir
+bin = CryptoBlocks.Utils.pack blocks
+```
+
+Usually, the packed blocks description is encrypted with a master key before being saved to disk.
+
+Unpack the binary :
+
+```elixir
+blocks = CryptoBlocks.Utils.unpack bin
+```
 
 ## Rebuild the original binary
 
