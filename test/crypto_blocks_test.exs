@@ -146,9 +146,40 @@ defmodule CryptoBlocksTest do
     assert :erlang.md5(data) == :erlang.md5(rebuild_data)
   end
 
+  test "blocks must be encrypted" do
+    # Load the input binary file
+    lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
+    data = read_bin lorem_512_filepath
+
+    # Split the input binary in blocks of 128 bytes
+    size = 128
+    {:ok, blocks} = %CryptoBlocks{storage: @blocks_path, size: size}
+    |> CryptoBlocks.write(data)
+    |> CryptoBlocks.final()
+
+    # Compare each block data with the corresponding source data
+    lorem_filepath = Path.join [@path, "data", "lorem.txt"]
+    {:ok, file} = File.open lorem_filepath, [:read, :binary]
+    for block <- blocks do
+      test_encrypted block, file, 128
+    end
+    File.close file
+  end
+
   # -----------------------------------------------------
   # Helper functions
   # -----------------------------------------------------
+  defp test_encrypted(block, file, bytes) do
+    # Read the input binary chunk
+    src_data = IO.binread file, bytes
+    # Read the corresponding encrypted block
+    block_filepath = Path.join [@blocks_path, CryptoBlocks.id_to_name(block.id)]
+    {:ok, file} = File.open block_filepath, [:read, :binary]
+    block_data = IO.binread file, :all
+    File.close file
+    assert :erlang.md5(src_data) != :erlang.md5(block_data)
+  end
+
   defp test_block_existence_and_block_size(block, size) do
     filepath = Path.join [@blocks_path, CryptoBlocks.id_to_name(block.id)]
     assert File.exists?(filepath)
