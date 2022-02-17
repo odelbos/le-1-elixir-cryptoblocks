@@ -27,9 +27,7 @@ Create a `CryptoBlocks` structure with initial values :
 ### Example : Reading an entire file and split the binary
 
 ```elixir
-{ :ok, file } = File.open filepath, [:read, :binary]
-data = IO.binread file, :all
-File.close file
+{:ok, data} = File.read filepath
 
 {:ok, blocks} = %CryptoBlocks{storage: "/..path...", size: 256}
   |> CryptoBlocks.write(data)
