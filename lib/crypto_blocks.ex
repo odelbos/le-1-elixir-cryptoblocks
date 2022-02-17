@@ -65,9 +65,7 @@ defmodule CryptoBlocks do
     {key, iv, tag, encrypted} = Crypto.encrypt data             # TODO : error handling
     id = generate_id struct.storage
     dest = Path.join [struct.storage, id_to_name(id)]
-    {:ok, file} = File.open dest, [:write, :binary, :raw]       # TODO : error handling
-    IO.binwrite file, encrypted
-    File.close file
+    File.write dest, encrypted, [:binary, :raw]                 # TODO : error handling
     %{struct | blocks: [%{id: id, key: key, iv: iv, tag: tag} | struct.blocks]}
   end
 
@@ -108,9 +106,7 @@ defmodule CryptoBlocks do
   def read_block(block, storage_path) do
     filename = id_to_name block.id
     filepath = Path.join [storage_path, filename]
-    {:ok, file} = File.open filepath, [:read, :binary]          # TODO : error handling
-    encrypted = IO.binread file, :all
-    File.close file
+    {:ok, encrypted} = File.read filepath                       # TODO : error handling
     Crypto.decrypt encrypted, block.key, block.iv, block.tag    # TODO : error handling
   end
 end
