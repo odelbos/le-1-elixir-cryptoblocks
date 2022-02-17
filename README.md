@@ -11,7 +11,7 @@ The subject of this exercice is to play with binary and pattern matching.
 `CryptoBlocks` is used to split a binary in many encrypted blocks of specific size.
 
 The input binary can be passed in one time to `CryptoBlocks` or in many times with chunks of different size.  
-_(ex: receiving a big file from socket and reading a stream with a buffer)._
+_(ex: receiving a big file from a socket or a stream and reading with a buffer)._
 
 The encryption is made with the `AES 256 GCM` algorithm. Each block is encrypted with his own `key`and `iv`.
 
