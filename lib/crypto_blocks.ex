@@ -85,27 +85,27 @@ defmodule CryptoBlocks do
 
   # -----
 
-  def rebuild(blocks, storage_path, filepath) do
+  def rebuild(blocks, storage, filepath) do
     {:ok, file} = File.open filepath, [:write, :binary, :raw]   # TODO : error handling
-    do_rebuild blocks, storage_path, file
+    do_rebuild blocks, storage, file
   end
 
-  defp do_rebuild([], _storage_path, file) do
+  defp do_rebuild([], _storage, file) do
     File.close file
     :ok
   end
 
-  defp do_rebuild([block | tail], storage_path, file) do
-    data = read_block block, storage_path
+  defp do_rebuild([block | tail], storage, file) do
+    data = read_block block, storage
     IO.binwrite file, data                                      # TODO : error handling
-    do_rebuild tail, storage_path, file
+    do_rebuild tail, storage, file
   end
 
   # -----
 
-  def read_block(block, storage_path) do
+  def read_block(block, storage) do
     filename = id_to_name block.id
-    filepath = Path.join [storage_path, filename]
+    filepath = Path.join [storage, filename]
     {:ok, encrypted} = File.read filepath                       # TODO : error handling
     Crypto.decrypt encrypted, block.key, block.iv, block.tag    # TODO : error handling
   end
