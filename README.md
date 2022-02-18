@@ -17,6 +17,12 @@ The encryption is made with the `AES 256 GCM` algorithm. Each block is encrypted
 
 As we are working with an accumulator to fit the size of each block to the required size it is necessary to call the `final()` function at the end of the processus.
 
+# Tests
+
+```
+mix test
+```
+
 # Usage
 
 Create a `CryptoBlocks` structure with initial values :
@@ -74,18 +80,18 @@ or
 
 ## The blocks description
 
-After calling the `final()` function you will receive a list containing the description of each block.
+After calling the `final()` function you will receive a list containing the description of each block :
 
 
 ```
 [
-  %{                  # block 1
+  %{                   # block 1
     id: << ... >>,     # id is used as file name for the block
     key: << ... >>,    # aes key (256 GCM)
     iv: << ... >>,     # aes iv
     tag: << ... >>     # aes tag
   },
-  %{                  # block 2
+  %{                   # block 2
     id: << ... >>,
     key: << ... >>,
     iv: << ... >>,
@@ -129,14 +135,50 @@ dest = "/absolute/path/myfile.txt"
 CryptoBlocks.rebuild blocks, storage, dest
 ```
 
+# Examples
+
+To use the examples you must create the storage folder, there is a mix task to do so.
+
+The task will create the storage folder structure :
+
+```
+mix storage --init
+```
+
+To clean up the storage folder :
+
+```
+mix storage --clean
+```
+
+To remove the storage folder :
+
+```
+mix storage --remove
+```
+
+### Run the examples
+
+```
+mix run examples/1_basic.ex
+```
+
+```
+mix run examples/2_many_chunks.ex
+```
+
+```
+mix run examples/3_pack_and_encrypt.ex
+```
+
 # Status
 
 - [x] Basic file splitter
 - [x] Basic tests
 - [x] Add block encryption
+- [x] Add usage examples
 - [ ] Error handling
 - [ ] Add specs
-- [ ] Add examples usage
 - [ ] Add documentation
 
 # Author
