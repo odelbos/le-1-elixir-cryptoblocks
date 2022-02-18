@@ -22,7 +22,7 @@ defmodule CryptoBlocksTest do
   test "binary must be splitted in many blocks" do
     # Load the input binary file
     lorem_filepath = Path.join [@path, "data", "lorem.txt"]
-    data = read_bin lorem_filepath
+    {:ok, data} = File.read lorem_filepath
 
     # Split the input binary in blocks of 256 bytes
     size = 256
@@ -47,7 +47,7 @@ defmodule CryptoBlocksTest do
     # Rebuild the binary from blocks and assert it's the same as the original binary
     dest = Path.join [@storage_path, "rebuild_lorem.txt"]
     CryptoBlocks.rebuild blocks, @blocks_path, dest
-    rebuild_data = read_bin dest
+    {:ok, rebuild_data} = File.read dest
     assert :erlang.md5(data) == :erlang.md5(rebuild_data)
   end
 
@@ -89,15 +89,15 @@ defmodule CryptoBlocksTest do
     # Rebuild the binary from blocks and assert it's the same as the original binary
     dest = Path.join [@storage_path, "rebuild_lorem.txt"]
     CryptoBlocks.rebuild blocks, @blocks_path, dest
-    rebuild_data = read_bin dest
-    lorem_data = read_bin lorem_filepath
+    {:ok, rebuild_data} = File.read dest
+    {:ok, lorem_data} = File.read lorem_filepath
     assert :erlang.md5(lorem_data) == :erlang.md5(rebuild_data)
   end
 
   test "when input binary size is a multiple of the block size" do
     # Load the input binary file
     lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
-    data = read_bin lorem_512_filepath
+    {:ok, data} = File.read lorem_512_filepath
 
     # Split the input binary in blocks of 128 bytes
     size = 128
@@ -117,14 +117,14 @@ defmodule CryptoBlocksTest do
     # Rebuild the binary from blocks and assert it's the same as the original binary
     dest = Path.join [@storage_path, "rebuild_lorem.txt"]
     CryptoBlocks.rebuild blocks, @blocks_path, dest
-    rebuild_data = read_bin dest
+    {:ok, rebuild_data} = File.read dest
     assert :erlang.md5(data) == :erlang.md5(rebuild_data)
   end
 
   test "when input binary size is smaller than the block size" do
     # Load the input binary file
     lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
-    data = read_bin lorem_512_filepath
+    {:ok, data} = File.read lorem_512_filepath
 
     # Split the input binary in blocks of 1024 bytes
     size = 1024
@@ -142,14 +142,14 @@ defmodule CryptoBlocksTest do
     # Rebuild the binary from blocks and assert it's the same as the original binary
     dest = Path.join [@storage_path, "rebuild_lorem.txt"]
     CryptoBlocks.rebuild blocks, @blocks_path, dest
-    rebuild_data = read_bin dest
+    {:ok, rebuild_data} = File.read dest
     assert :erlang.md5(data) == :erlang.md5(rebuild_data)
   end
 
   test "blocks must be encrypted" do
     # Load the input binary file
     lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
-    data = read_bin lorem_512_filepath
+    {:ok, data} = File.read lorem_512_filepath
 
     # Split the input binary in blocks of 128 bytes
     size = 128
@@ -184,12 +184,5 @@ defmodule CryptoBlocksTest do
     filepath = Path.join [@blocks_path, CryptoBlocks.id_to_name(block.id)]
     assert File.exists?(filepath)
     assert size == with {:ok, %File.Stat{size: bs}} <- File.stat(filepath), do: bs
-  end
-
-  defp read_bin(filepath) do
-    {:ok, file} = File.open filepath, [:read, :binary]
-    data = IO.binread file, :all
-    File.close file
-    data
   end
 end
