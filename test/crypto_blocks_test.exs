@@ -109,7 +109,7 @@ defmodule CryptoBlocksTest do
     # (data binary is 512 bytes)
     assert length(blocks) == 4
 
-    # Test all remaining blocks
+    # Test blocks
     for block <- blocks do
       test_block_existence_and_block_size block, size
     end
