@@ -1,12 +1,12 @@
 # Synopsis
 
-This repository is an Elixir learning exercice.
+This repository is an Elixir learning exercise.
 
 **Disclaimer : Do not use this code in production.**
 
-## Subject of the exercice
+## Subject of the exercise
 
-The subject of this exercice is to play with binary and pattern matching.
+The subject of this exercise is to play with binary and pattern matching.
 
 `CryptoBlocks` is used to split a binary in many encrypted blocks of specific size.
 
