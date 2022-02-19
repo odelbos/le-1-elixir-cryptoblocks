@@ -135,6 +135,12 @@ dest = "/absolute/path/myfile.txt"
 CryptoBlocks.rebuild blocks, storage, dest
 ```
 
+## Delete blocks
+
+```Elixir
+CryptoBlocks.delete blocks, storage
+```
+
 # Examples
 
 To use the examples you must create the storage folder, there is a mix task to do so.
@@ -169,6 +175,10 @@ mix run examples/2_many_chunks.ex
 
 ```
 mix run examples/3_pack_and_encrypt.ex
+```
+
+```
+mix run examples/4_delete.ex
 ```
 
 # Status
