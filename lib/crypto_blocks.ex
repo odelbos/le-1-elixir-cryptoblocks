@@ -109,4 +109,16 @@ defmodule CryptoBlocks do
     {:ok, encrypted} = File.read filepath                       # TODO : error handling
     Crypto.decrypt encrypted, block.key, block.iv, block.tag    # TODO : error handling
   end
+
+  # -----
+
+  def delete([], _storage) do
+    :ok
+  end
+
+  def delete([block | tail], storage) do
+    filepath = Path.join [storage, id_to_name(block.id)]
+    if File.exists?(filepath), do: File.rm filepath             # TODO : error handling
+    delete tail, storage
+  end
 end
