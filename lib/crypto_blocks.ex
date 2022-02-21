@@ -26,18 +26,19 @@ defmodule CryptoBlocks do
     # %File.Error{reason: reason} -> IO.inspect reason
     e -> case e do
            %File.Error{reason: reason} ->
-             {:error, reason, struct}
-           %ErlangError{original: {reason, _, _}} ->
-             {:error, reason, struct}
+             {:error, reason, "File system error", struct}
+           %ErlangError{original: {reason, _, info}} ->
+             IO.inspect __STACKTRACE__
+             {:error, reason, "Encryption error: #{info}", struct}
            _ ->
-             {:error, :unknow, struct}
+             {:error, :unknown, "Unknown error", struct}
          end
   end
 
   # -----
 
-  def final({:error, reason, struct}) when struct.acc == nil do
-    {:error, reason, Enum.reverse struct.blocks}
+  def final({:error, reason, msg, struct}) when struct.acc == nil do
+    {:error, reason, msg, Enum.reverse struct.blocks}
   end
 
   def final(%CryptoBlocks{} = struct) when struct.acc == nil do
