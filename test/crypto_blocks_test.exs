@@ -166,6 +166,35 @@ defmodule CryptoBlocksTest do
     File.close file
   end
 
+  test "all blocks must be deleted" do
+    # Load the input binary file
+    lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
+    {:ok, data} = File.read lorem_512_filepath
+
+    # Split the input binary in blocks of 128 bytes
+    size = 128
+    {:ok, blocks} = %CryptoBlocks{storage: @blocks_path, size: size}
+    |> CryptoBlocks.write(data)
+    |> CryptoBlocks.final()
+
+    # Must end up with 4 blocks (4 * 128)
+    assert length(blocks) == 4
+
+    # Test blocks
+    for block <- blocks do
+      test_block_existence_and_block_size block, size
+    end
+
+    # Delete all blocks
+    CryptoBlocks.delete blocks, @blocks_path
+
+    # Test that all blocks file has been deleted
+    for block <- blocks do
+      block_filepath = Path.join [@blocks_path, CryptoBlocks.id_to_name(block.id)]
+      assert not File.exists?(block_filepath)
+    end
+  end
+
   # -----------------------------------------------------
   # Helper functions
   # -----------------------------------------------------
