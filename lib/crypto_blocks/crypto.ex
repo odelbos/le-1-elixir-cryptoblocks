@@ -5,8 +5,7 @@ defmodule CryptoBlocks.Crypto do
 
   def encrypt(data, key) do
     iv = :crypto.strong_rand_bytes 16
-    # aad = "A256GCM"
-    aad = nil
+    aad = "A256GCM"
     {encrypted, tag} =
       :crypto.crypto_one_time_aead :aes_256_gcm, key, iv, data, aad, true
     {iv, tag, encrypted}
