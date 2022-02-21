@@ -178,6 +178,7 @@ mix run examples/3_pack_and_encrypt.ex
 ```
 
 ```
+mix storage --clean               # Make sure to start with a clean storage
 mix run examples/4_delete.ex
 ```
 
