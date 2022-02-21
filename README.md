@@ -33,6 +33,9 @@ Create a `CryptoBlocks` structure with initial values :
 ### Example : Reading an entire file and split the binary
 
 ```elixir
+# Without any error handling
+# The {:ok, block} pattern matching will fail is there is an error.
+
 {:ok, data} = File.read filepath
 
 {:ok, blocks} = %CryptoBlocks{storage: "/..path...", size: 256}
@@ -42,11 +45,31 @@ Create a `CryptoBlocks` structure with initial values :
 IO.inspect blocks
 ```
 
+```elixir
+# With error handling
+
+result = %CryptoBlocks{storage: "/..path...", size: 256}
+  |> CryptoBlocks.write(data)
+  |> CryptoBlocks.final()
+
+case result do
+  {:error, reason, msg, blocks} ->
+    IO.puts "We receive an error: #{msg}, #{reason}"
+    IO.inspect blocks
+    # Up to you to clean up the created block before the error occur.
+    # CryptoBlocks.delete blocks, "/..storage..path.."
+  {:ok, blocks} ->
+    IO.inspect blocks
+end
+```
+
 ### Example : Reading many chunks
 
 _(each chunks can be of different size)_
 
 ```elixir
+# Without any error handling
+
 s = %CryptoBlocks{storage: "/..path...", size: 256}
 
 # ... read the first chunk (from a socket or a stream)
@@ -188,7 +211,7 @@ mix run examples/4_delete.ex
 - [x] Basic tests
 - [x] Add block encryption
 - [x] Add usage examples
-- [ ] Error handling
+- [x] Error handling
 - [ ] Add specs
 - [ ] Add documentation
 
