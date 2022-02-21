@@ -27,7 +27,6 @@ defmodule CryptoBlocks do
            %File.Error{reason: reason} ->
              {:error, reason, "File system error", struct}
            %ErlangError{original: {reason, _, info}} ->
-             IO.inspect __STACKTRACE__
              {:error, reason, "Encryption error: #{info}", struct}
            _ ->
              {:error, :unknown, "Unknown error", struct}
