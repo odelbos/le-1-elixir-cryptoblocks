@@ -23,7 +23,6 @@ defmodule CryptoBlocks do
   def write(%CryptoBlocks{} = struct, data) when struct.acc == nil do
     make_blocks struct, data
   rescue
-    # %File.Error{reason: reason} -> IO.inspect reason
     e -> case e do
            %File.Error{reason: reason} ->
              {:error, reason, "File system error", struct}
@@ -77,10 +76,10 @@ defmodule CryptoBlocks do
   # -----
 
   def write_block(%CryptoBlocks{} = struct, data) do
-    {key, iv, tag, encrypted} = Crypto.encrypt data         # TODO : error handling
+    {key, iv, tag, encrypted} = Crypto.encrypt data
     id = generate_id struct.storage
     dest = Path.join [struct.storage, id_to_name(id)]
-    File.write! dest, encrypted, [:binary, :raw]            # TODO : error handling
+    File.write! dest, encrypted, [:binary, :raw]
     %{struct | blocks: [%{id: id, key: key, iv: iv, tag: tag} | struct.blocks]}
   end
 
@@ -105,15 +104,13 @@ defmodule CryptoBlocks do
     do_rebuild blocks, storage, file
   rescue
     e -> case e do
-           {:error, reason} ->
-             {:error, reason,"File system error 1"}
+           {:error, reason, msg} -> {:error, reason, msg}
            %File.Error{reason: reason} ->
-             {:error, reason, "File system error 2"}
+             {:error, reason, "File system error"}
            %ErlangError{original: {reason, _, _}} ->
              {:error, reason, "Cannot decrypt a block"}
            _ ->
-             IO.inspect e
-             {:error, :unknow, "Unknow error"}
+             {:error, :unknown, "Unknown error"}
          end
   end
 
@@ -143,9 +140,7 @@ defmodule CryptoBlocks do
 
   # -----
 
-  def delete([], _storage) do
-    :ok
-  end
+  def delete([], _storage), do: :ok
 
   def delete([block | tail], storage) do
     filepath = Path.join [storage, id_to_name(block.id)]
