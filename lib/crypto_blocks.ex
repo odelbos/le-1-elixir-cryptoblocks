@@ -143,7 +143,7 @@ defmodule CryptoBlocks do
 
   def delete([block | tail], storage) do
     filepath = Path.join [storage, id_to_name(block.id)]
-    if File.exists?(filepath), do: File.rm filepath             # TODO : error handling
+    if File.exists?(filepath), do: File.rm filepath
     delete tail, storage
   end
 end
