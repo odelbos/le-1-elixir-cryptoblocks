@@ -146,4 +146,15 @@ defmodule CryptoBlocks do
     if File.exists?(filepath), do: File.rm filepath
     delete tail, storage
   end
+
+  # -----
+
+  def bytes(blocks, storage) do
+    Enum.reduce(blocks, 0, fn block, acc ->
+      case File.stat(Path.join [storage, id_to_name(block.id)]) do
+        {:ok, %File.Stat{size: bs}} -> acc + bs
+        _ -> acc
+      end
+    end)
+  end
 end
