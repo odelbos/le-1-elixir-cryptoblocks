@@ -164,6 +164,16 @@ CryptoBlocks.rebuild blocks, storage, dest
 CryptoBlocks.delete blocks, storage
 ```
 
+## Read an individual block
+
+```Elixir
+[first_block | rest] = blocks
+
+data = CryptoBlocks.read_block block, storage
+```
+
+When using `read_block` function, the block is decrypted.
+
 ## Utils functions
 
 To get the bytes size sum of all blocks :
