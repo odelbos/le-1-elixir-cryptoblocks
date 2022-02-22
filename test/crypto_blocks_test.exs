@@ -20,15 +20,9 @@ defmodule CryptoBlocksTest do
   # -----
 
   test "binary must be splitted in many blocks" do
-    # Load the input binary file
-    lorem_filepath = Path.join [@path, "data", "lorem.txt"]
-    {:ok, data} = File.read lorem_filepath
-
-    # Split the input binary in blocks of 256 bytes
+    # Split the lorem.txt file in blocks of 256 bytes
     size = 256
-    {:ok, blocks} = %CryptoBlocks{storage: @blocks_path, size: size}
-      |> CryptoBlocks.write(data)
-      |> CryptoBlocks.final()
+    {_lorem_512_filepath, data, blocks} = make_lorem_blocks size
 
     # Must end up with 13 blocks (12 * 256 + 121)
     # (data binary is 3193 bytes)
@@ -114,7 +108,7 @@ defmodule CryptoBlocksTest do
   end
 
   test "when input binary size is smaller than the block size" do
-    # Split the lorem_512.txt file in blocks of 128 bytes
+    # Split the lorem_512.txt file in blocks of 1024 bytes
     size = 1024
     {_lorem_512_filepath, data, blocks} = make_lorem_512_blocks size
 
@@ -167,9 +161,31 @@ defmodule CryptoBlocksTest do
     end
   end
 
+  test "bytes sum of each blocks" do
+    # Split the lorem.txt file in blocks of 256 bytes
+    size = 256
+    {_lorem_512_filepath, _data, blocks} = make_lorem_blocks size
+
+    # Asseert the sum of each block is equal to the size of the original file
+    assert CryptoBlocks.bytes(blocks, @blocks_path) == 3193
+  end
+
   # -----------------------------------------------------
   # Helper functions
   # -----------------------------------------------------
+  defp make_lorem_blocks(size) do
+    # Load the input binary file
+    lorem_filepath = Path.join [@path, "data", "lorem.txt"]
+    {:ok, data} = File.read lorem_filepath
+
+    # Split the input binary in blocks of 128 bytes
+    {:ok, blocks} = %CryptoBlocks{storage: @blocks_path, size: size}
+    |> CryptoBlocks.write(data)
+    |> CryptoBlocks.final()
+
+    {lorem_filepath, data, blocks}
+  end
+
   defp make_lorem_512_blocks(size) do
     # Load the input binary file
     lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
