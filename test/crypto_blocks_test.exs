@@ -95,20 +95,12 @@ defmodule CryptoBlocksTest do
   end
 
   test "when input binary size is a multiple of the block size" do
-    # Load the input binary file
-    lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
-    {:ok, data} = File.read lorem_512_filepath
-
-    # Split the input binary in blocks of 128 bytes
+    # Split the lorem_512.txt file in blocks of 128 bytes
     size = 128
-    {:ok, blocks} = %CryptoBlocks{storage: @blocks_path, size: size}
-      |> CryptoBlocks.write(data)
-      |> CryptoBlocks.final()
+    {_lorem_512_filepath, data, blocks} = make_lorem_512_blocks size
 
-    # Must end up with 4 blocks (4 * 128)
-    # (data binary is 512 bytes)
+    # Must end up with 4 blocks (4 * 128). (data binary is 512 bytes)
     assert length(blocks) == 4
-
     # Test blocks
     for block <- blocks do
       test_block_existence_and_block_size block, size
@@ -122,19 +114,12 @@ defmodule CryptoBlocksTest do
   end
 
   test "when input binary size is smaller than the block size" do
-    # Load the input binary file
-    lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
-    {:ok, data} = File.read lorem_512_filepath
-
-    # Split the input binary in blocks of 1024 bytes
+    # Split the lorem_512.txt file in blocks of 128 bytes
     size = 1024
-    {:ok, blocks} = %CryptoBlocks{storage: @blocks_path, size: size}
-    |> CryptoBlocks.write(data)
-    |> CryptoBlocks.final()
+    {_lorem_512_filepath, data, blocks} = make_lorem_512_blocks size
 
     # Must end up with 1 blocks of 512 bytes
     assert length(blocks) == 1
-
     # Test the block
     [block | _r] = blocks
     test_block_existence_and_block_size block, 512
@@ -147,15 +132,9 @@ defmodule CryptoBlocksTest do
   end
 
   test "blocks must be encrypted" do
-    # Load the input binary file
-    lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
-    {:ok, data} = File.read lorem_512_filepath
-
-    # Split the input binary in blocks of 128 bytes
+    # Split the lorem_512.txt file in blocks of 128 bytes
     size = 128
-    {:ok, blocks} = %CryptoBlocks{storage: @blocks_path, size: size}
-    |> CryptoBlocks.write(data)
-    |> CryptoBlocks.final()
+    {_lorem_512_filepath, _data, blocks} = make_lorem_512_blocks size
 
     # Compare each block data with the corresponding source data
     lorem_filepath = Path.join [@path, "data", "lorem.txt"]
@@ -167,19 +146,12 @@ defmodule CryptoBlocksTest do
   end
 
   test "all blocks must be deleted" do
-    # Load the input binary file
-    lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
-    {:ok, data} = File.read lorem_512_filepath
-
-    # Split the input binary in blocks of 128 bytes
+    # Split the lorem_512.txt file in blocks of 128 bytes
     size = 128
-    {:ok, blocks} = %CryptoBlocks{storage: @blocks_path, size: size}
-    |> CryptoBlocks.write(data)
-    |> CryptoBlocks.final()
+    {_lorem_512_filepath, _data, blocks} = make_lorem_512_blocks size
 
     # Must end up with 4 blocks (4 * 128)
     assert length(blocks) == 4
-
     # Test blocks
     for block <- blocks do
       test_block_existence_and_block_size block, size
@@ -198,6 +170,19 @@ defmodule CryptoBlocksTest do
   # -----------------------------------------------------
   # Helper functions
   # -----------------------------------------------------
+  defp make_lorem_512_blocks(size) do
+    # Load the input binary file
+    lorem_512_filepath = Path.join [@path, "data", "lorem_512.txt"]
+    {:ok, data} = File.read lorem_512_filepath
+
+    # Split the input binary in blocks of 128 bytes
+    {:ok, blocks} = %CryptoBlocks{storage: @blocks_path, size: size}
+    |> CryptoBlocks.write(data)
+    |> CryptoBlocks.final()
+
+    {lorem_512_filepath, data, blocks}
+  end
+
   defp test_encrypted(block, file, bytes) do
     # Read the input binary chunk
     src_data = IO.binread file, bytes
