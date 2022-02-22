@@ -164,6 +164,32 @@ CryptoBlocks.rebuild blocks, storage, dest
 CryptoBlocks.delete blocks, storage
 ```
 
+## Utils functions
+
+To get the bytes size sum of all blocks :
+
+```Elixir
+size = CryptoBlocks.bytes blocks, storage
+```
+
+`size` must be equals to the size of the original binary (in bytes).
+
+To get a hash of the unencrypted blocks :
+
+```Elixir
+hash = CryptoBlocks.hash blocks, storage      # default is sha256
+```
+
+`hash` must be equals to the hash of the original binary, usefull to verify the integrity of the blocks.
+
+You can specify various hash algorithms :
+
+```Elixir
+hash = CryptoBlocks.hash blocks, storage, :blake2b
+```
+
+Available algorithms are : `:sha256`, `:sha512`, `:blake2b`, `:blake2s`
+
 # Examples
 
 To use the examples you must create the storage folder, there is a mix task to do so.
