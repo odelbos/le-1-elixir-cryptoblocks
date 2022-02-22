@@ -157,4 +157,15 @@ defmodule CryptoBlocks do
       end
     end)
   end
+
+  # -----
+
+  def hash(blocks, storage, algo \\ :sha256)
+            when algo in [:sha256, :sha512, :blake2b, :blake2s] do
+    state = :crypto.hash_init algo
+    blocks
+      |> Enum.reduce(state, &:crypto.hash_update(&2, read_block(&1, storage)))
+      |> :crypto.hash_final()
+      |> Base.encode16(case: :lower)
+  end
 end
