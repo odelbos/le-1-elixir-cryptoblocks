@@ -22,7 +22,7 @@ defmodule CryptoBlocksTest do
   test "binary must be splitted in many blocks" do
     # Split the lorem.txt file in blocks of 256 bytes
     size = 256
-    {_lorem_512_filepath, data, blocks} = make_lorem_blocks size
+    {_lorem_filepath, data, blocks} = make_lorem_blocks size
 
     # Must end up with 13 blocks (12 * 256 + 121)
     # (data binary is 3193 bytes)
@@ -164,10 +164,22 @@ defmodule CryptoBlocksTest do
   test "bytes sum of each blocks" do
     # Split the lorem.txt file in blocks of 256 bytes
     size = 256
-    {_lorem_512_filepath, _data, blocks} = make_lorem_blocks size
+    {_lorem_filepath, _data, blocks} = make_lorem_blocks size
 
-    # Asseert the sum of each block is equal to the size of the original file
+    # The bytes sum of all blocks must be equal to the size of the original file
     assert CryptoBlocks.bytes(blocks, @blocks_path) == 3193
+  end
+
+  test "hash of unencrypted blocks must be equals to original file hash" do
+    # Split the lorem.txt file in blocks of 256 bytes
+    size = 256
+    {_lorem_filepath, _data, blocks} = make_lorem_blocks size
+
+    # Original file hash. (sha256)
+    h = "ae10e1cb2dbe24819fc5ee3609ac16ccd76a047b636a9c00d5569c2e83294242"
+
+    # The hash of unencrypted blocks must be equals the the hash of the original file
+    assert CryptoBlocks.hash(blocks, @blocks_path) == h
   end
 
   # -----------------------------------------------------
