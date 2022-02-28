@@ -13,7 +13,7 @@ defmodule CryptoBlocks do
             acc: nil         # Internal accumulator
 
   def write(%CryptoBlocks{} = struct, data) when byte_size(data) == 0 do
-    {:ok, Enum.reverse struct.blocks}
+    struct
   end
 
   def write(%CryptoBlocks{} = struct, data) when struct.acc != nil do
