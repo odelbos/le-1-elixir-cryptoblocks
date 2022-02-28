@@ -63,9 +63,9 @@ defmodule CryptoBlocks do
   end
 
   def make_blocks(%CryptoBlocks{} = struct, bin) do
-    s = struct.size * 8
-    <<chunk::size(s), rest::binary>> = bin
-    make_blocks struct, <<chunk::size(s)>>, rest
+    s = struct.size
+    <<chunk::binary-size(s), rest::binary>> = bin
+    make_blocks struct, <<chunk::binary-size(s)>>, rest
   end
 
   def make_blocks(%CryptoBlocks{} = struct, data, bin) do
