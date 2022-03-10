@@ -34,7 +34,7 @@ Create a `CryptoBlocks` structure with initial values :
 
 ```elixir
 # Without any error handling
-# The {:ok, block} pattern matching will fail is there is an error.
+# The {:ok, blocks} pattern matching will fail is there is an error.
 
 {:ok, data} = File.read filepath
 
