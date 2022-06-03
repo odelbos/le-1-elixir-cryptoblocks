@@ -124,7 +124,7 @@ After calling the `final()` function you will receive a list containing the desc
 ]
 ```
 
-`id`, `key`, `iv`, `tag` are of type binary.
+`id`, `key`, `iv`, `tag` are binary.
 
 Usually the last block is the remaining accumulator and it is smaller than the other blocks.  
 _(the last block will have the same size than the other blocks only when the input binary size is a multiple of the chosen output block size)._
